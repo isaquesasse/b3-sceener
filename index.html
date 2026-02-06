@@ -3,600 +3,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3 Pro | Dashboard</title>
+    <title>B3 Screener Pro | Market Wide</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* --- DESIGN SYSTEM PERSONALIZADO --- */
         :root {
-            --bg-body: #0f172a;       /* Slate 900 */
-            --bg-sidebar: #1e293b;    /* Slate 800 */
-            --bg-card: #1e293b;
-            --accent-color: #38bdf8;  /* Sky 400 */
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --success-green: #4ade80;
-            --danger-red: #f87171;
+            --bg-body: #0b0e14;
+            --bg-panel: #151a23;
+            --border-color: #2a3441;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-body);
-            color: #f1f5f9;
-            overflow-x: hidden;
-        }
-
-        /* Layout Grid */
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-        }
-
-        .brand {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-link {
-            color: var(--text-muted);
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background-color: rgba(56, 189, 248, 0.1);
-            color: var(--accent-color);
-        }
-
-        /* Conteúdo Principal */
-        .main-content {
-            flex: 1;
-            margin-left: 260px; /* Mesma largura da sidebar */
-            padding: 2rem;
-        }
-
-        /* Cards de KPI */
-        .kpi-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .kpi-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-        .kpi-value { font-size: 1.8rem; font-weight: 600; margin-top: 0.5rem; }
-
-        /* Tabela Profissional */
-        .table-container {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        .table {
-            margin-bottom: 0;
             color: #e2e8f0;
         }
 
-        .table thead th {
-            background-color: #0f172a;
-            border-bottom: 2px solid var(--border-color);
-            color: var(--text-muted);
-            font-weight: 600;
-            cursor: pointer; /* Indica que é clicável para ordenar */
-            user-select: none;
+        /* Navbar estilo App */
+        .navbar-custom {
+            background: rgba(21, 26, 35, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
         }
-        
-        .table thead th:hover { color: var(--accent-color); }
 
-        .table tbody tr { transition: background-color 0.2s; border-bottom: 1px solid var(--border-color); }
-        .table tbody tr:hover { background-color: rgba(255, 255, 255, 0.03); }
-
-        .badge-graham { background-color: rgba(74, 222, 128, 0.15); color: var(--success-green); border: 1px solid rgba(74, 222, 128, 0.2); }
-        .badge-risk { background-color: rgba(248, 113, 113, 0.15); color: var(--danger-red); border: 1px solid rgba(248, 113, 113, 0.2); }
-
-        /* Botões e Inputs */
-        .btn-action {
-            background-color: rgba(56, 189, 248, 0.1);
-            color: var(--accent-color);
-            border: none;
-            transition: 0.2s;
-        }
-        .btn-action:hover { background-color: var(--accent-color); color: #000; }
-
-        .search-box {
-            background-color: #0f172a;
+        /* Cards */
+        .metric-card {
+            background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            width: 100%;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
         }
-        .search-box:focus { outline: none; border-color: var(--accent-color); }
+        .metric-card:hover { transform: translateY(-2px); border-color: var(--primary); }
 
-        /* Animações */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-
-        /* Modal */
-        .modal-content { background-color: var(--bg-card); border: 1px solid var(--border-color); }
-        .modal-header, .modal-footer { border-color: var(--border-color); }
-        
-        /* Mobile adjustment */
-        @media (max-width: 768px) {
-            .sidebar { display: none; } /* Em produção faríamos um menu hamburguer */
-            .main-content { margin-left: 0; }
+        /* Tabela */
+        .table-container {
+            background-color: var(--bg-panel);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
+
+        .table-custom { --bs-table-bg: transparent; color: #cbd5e1; margin-bottom: 0; }
+        .table-custom th {
+            background-color: #1e2532;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            padding: 1rem;
+        }
+        .table-custom td { padding: 1rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .table-custom tr:last-child td { border-bottom: none; }
+        .table-custom tr:hover { background-color: rgba(59, 130, 246, 0.05); }
+
+        /* Badges */
+        .badge-soft-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-soft-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-soft-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        /* Inputs */
+        .search-input {
+            background-color: #0b0e14;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .search-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+
+        /* Loading */
+        .loader-bar { height: 3px; width: 100%; background: #1e2532; position: fixed; top: 0; left: 0; z-index: 9999; }
+        .loader-progress { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-    <nav class="sidebar">
-        <div class="brand">
-            <i class="bi bi-graph-up-arrow"></i> B3 Pro
-        </div>
-        
-        <div class="nav flex-column">
-            <a href="#" class="nav-link active" onclick="switchView('dashboard')"><i class="bi bi-grid-1x2"></i> Dashboard</a>
-            <a href="#" class="nav-link" onclick="switchView('portfolio')"><i class="bi bi-wallet2"></i> Minha Carteira</a>
-            <a href="#" class="nav-link" onclick="toggleDidactic()"><i class="bi bi-book"></i> Aprenda</a>
-            <div class="mt-4 text-muted small px-3">FILTROS RÁPIDOS</div>
-            <a href="#" class="nav-link" onclick="applyFilter('graham')"><i class="bi bi-gem"></i> Graham Screener</a>
-            <a href="#" class="nav-link" onclick="applyFilter('dividendos')"><i class="bi bi-cash-coin"></i> Dividendos</a>
-            <a href="#" class="nav-link" onclick="applyFilter('reset')"><i class="bi bi-arrow-counterclockwise"></i> Limpar Filtros</a>
-        </div>
+<div class="loader-bar"><div class="loader-progress" id="progressBar"></div></div>
 
-        <div class="mt-auto">
-            <div class="p-3 bg-dark rounded border border-secondary">
-                <small class="text-muted d-block mb-1">Status API</small>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-success rounded-circle p-1" style="width:10px; height:10px;"> </span>
-                    <span style="font-size: 0.85rem;">Online (Simulado)</span>
+<nav class="navbar navbar-custom fixed-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-white" href="#">
+            <i class="bi bi-rocket-takeoff-fill text-primary"></i> B3<span class="text-primary">Screener</span>
+        </a>
+        <div class="d-flex gap-3 align-items-center">
+            <div class="text-end d-none d-md-block">
+                <small class="text-muted d-block" style="font-size: 0.7rem;">DADOS BRAPI.DEV</small>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">● Online</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5 mt-5">
+    
+    <div class="row align-items-end mb-5">
+        <div class="col-md-7">
+            <h1 class="fw-bold mb-2">Análise de Mercado</h1>
+            <p class="text-muted lead mb-0">Explore fundamentos, Graham e Bazin em tempo real.</p>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <div class="d-flex justify-content-end gap-2">
+                <input type="text" id="globalSearch" class="search-input" placeholder="Pesquisar Ticker (ex: KLBN11)...">
+                <button class="btn btn-primary" onclick="handleSearchManual()"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Ações Carregadas</small>
+                        <h2 class="fw-bold mt-2" id="kpiTotal">0</h2>
+                    </div>
+                    <i class="bi bi-layers text-primary fs-4"></i>
                 </div>
             </div>
         </div>
-    </nav>
-
-    <main class="main-content">
-        <header class="d-flex justify-content-between align-items-center mb-5">
-            <div>
-                <h2 class="fw-bold mb-1">Visão de Mercado</h2>
-                <p class="text-muted mb-0">Análise fundamentalista e triagem de ativos.</p>
-            </div>
-            <div class="d-flex gap-3">
-                <input type="text" id="searchInput" class="search-box" placeholder="Pesquisar Ticker (ex: WEGE3)..." onkeyup="handleSearch()">
-            </div>
-        </header>
-
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="kpi-card">
-                    <div class="kpi-title">Ativos Analisados</div>
-                    <div class="kpi-value" id="kpiCount">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="kpi-card">
-                    <div class="kpi-title">Oportunidades Graham</div>
-                    <div class="kpi-value text-success" id="kpiGraham">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="kpi-card">
-                    <div class="kpi-title">Média Dividend Yield</div>
-                    <div class="kpi-value text-info" id="kpiDy">0%</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="kpi-card">
-                    <div class="kpi-title">Data Análise</div>
-                    <div class="kpi-value" style="font-size: 1.2rem;">Hoje</div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Oportunidades Graham</small>
+                        <h2 class="fw-bold mt-2 text-success" id="kpiGraham">0</h2>
+                    </div>
+                    <i class="bi bi-gem text-success fs-4"></i>
                 </div>
             </div>
         </div>
-
-        <div id="didacticSection" class="alert alert-info border-0 mb-4" style="background-color: #0c4a6e; color: #bae6fd; display: none;">
-            <h5><i class="bi bi-lightbulb-fill"></i> Dicionário do Investidor</h5>
-            <hr>
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>💎 Fórmula de Graham:</strong> <code>√(22,5 × LPA × VPA)</code>. Busca empresas cujo preço de tela é menor que o valor dos seus ativos e lucros.</p>
-                    <p><strong>🛡️ Margem de Segurança:</strong> A diferença percentual entre o Preço Justo e o Preço Atual. Quanto maior, mais seguro.</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>💰 Método Bazin:</strong> Preço Teto = Dividendo pago / 0.06. Garante 6% de retorno ao ano via proventos.</p>
-                    <p><strong>📉 P/L (Preço/Lucro):</strong> Em quantos anos você recupera o investimento apenas com o lucro da empresa.</p>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Pagadoras (DY > 6%)</small>
+                        <h2 class="fw-bold mt-2 text-warning" id="kpiDy">0</h2>
+                    </div>
+                    <i class="bi bi-piggy-bank text-warning fs-4"></i>
                 </div>
             </div>
         </div>
-
-        <div class="table-container animate-fade">
-            <div class="d-flex justify-content-between p-3 border-bottom border-secondary align-items-center">
-                <h5 class="mb-0 fw-bold">Resultados da Busca</h5>
-                <span class="badge bg-secondary" id="activeFilterBadge">Todos os Ativos</span>
-            </div>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th onclick="sortTable('symbol')">Ativo <i class="bi bi-arrow-down-up small"></i></th>
-                            <th onclick="sortTable('price')">Preço <i class="bi bi-arrow-down-up small"></i></th>
-                            <th onclick="sortTable('graham')">Preço Justo (Graham) <i class="bi bi-arrow-down-up small"></i></th>
-                            <th onclick="sortTable('margem')">Margem Seg. <i class="bi bi-arrow-down-up small"></i></th>
-                            <th onclick="sortTable('dy')">D.Y. <i class="bi bi-arrow-down-up small"></i></th>
-                            <th onclick="sortTable('pl')">P/L <i class="bi bi-arrow-down-up small"></i></th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stocksTableBody">
-                        </tbody>
-                </table>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold">Baratas (P/VP < 1)</small>
+                        <h2 class="fw-bold mt-2 text-info" id="kpiCheap">0</h2>
+                    </div>
+                    <i class="bi bi-tag text-info fs-4"></i>
+                </div>
             </div>
         </div>
-    </main>
+    </div>
+
+    <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
+        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 active" onclick="resetFilters()">Todos</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="filterData('graham')">💎 Graham Positivo</button>
+        <button class="btn btn-outline-warning btn-sm rounded-pill px-3" onclick="filterData('dividend')">💰 Dividendos > 6%</button>
+        <button class="btn btn-outline-info btn-sm rounded-pill px-3" onclick="filterData('cheap')">📉 Abaixo do VPA</button>
+    </div>
+
+    <div class="table-container mb-4">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th onclick="sortData('symbol')">Ativo <i class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th onclick="sortData('price')">Preço <i class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th onclick="sortData('graham')">Preço Justo (Graham)</th>
+                        <th onclick="sortData('margem')">Margem Seg. <i class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th onclick="sortData('dy')">D.Y. (12m) <i class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th onclick="sortData('pl')">P/L <i class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="text-end">Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="stocksTableBody">
+                    </tbody>
+            </table>
+        </div>
+        <div class="p-3 text-center border-top border-secondary">
+            <button id="btnLoadMore" class="btn btn-secondary w-100" onclick="loadNextBatch()">
+                <i class="bi bi-arrow-down-circle"></i> Carregar Mais Ações
+            </button>
+        </div>
+    </div>
 </div>
 
-<div class="modal fade" id="stockModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="stockModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="modalStockTitle">WEGE3</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content" style="background-color: #1e2532; color: #fff; border: 1px solid #334155;">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold" id="modalTitle">Ativo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row g-4">
-                    <div class="col-md-5 border-end border-secondary">
-                        <h6 class="text-muted text-uppercase small">Fundamentos</h6>
-                        <ul class="list-group list-group-flush" id="modalDataList">
-                            </ul>
+                    <div class="col-md-5">
+                         <div class="p-3 rounded bg-dark border border-secondary mb-3">
+                            <h6 class="text-muted text-uppercase small">Fundamentos</h6>
+                            <div class="d-flex justify-content-between mb-2"><span>LPA (Lucro):</span> <strong id="mdLpa">--</strong></div>
+                            <div class="d-flex justify-content-between mb-2"><span>VPA (Patrimônio):</span> <strong id="mdVpa">--</strong></div>
+                            <div class="d-flex justify-content-between mb-0"><span>P/L (Retorno):</span> <strong id="mdPl">--</strong></div>
+                        </div>
+                        <div class="p-3 rounded bg-dark border border-secondary">
+                            <h6 class="text-muted text-uppercase small">Avaliação</h6>
+                            <p id="mdAnalysis" class="small mb-0">...</p>
+                        </div>
                     </div>
                     <div class="col-md-7">
-                        <div style="height: 200px;">
-                            <canvas id="detailChart"></canvas>
-                        </div>
-                        <div class="mt-3 p-3 rounded" style="background-color: rgba(255,255,255,0.05);">
-                            <h6 class="text-accent"><i class="bi bi-robot"></i> Análise Automática</h6>
-                            <p class="small mb-0 text-muted" id="modalAnalysisText">...</p>
-                        </div>
+                        <canvas id="detailChart" style="max-height: 250px;"></canvas>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary btn-sm">Adicionar à Carteira</button>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    // --- ESTADO DA APLICAÇÃO ---
-    const AppState = {
-        rawData: [],
-        displayData: [],
-        filter: 'all',
-        sort: { column: 'margem', order: 'desc' }, // Padrão: Melhores margens primeiro
-        chartInstance: null
-    };
+    // --- CONFIGURAÇÃO ---
+    const API_TOKEN = 'wRDeSAirN1teSpR7afhgp3'; // Sua chave
+    
+    // Lista "Mega" com as principais ações da B3 (IBOV + SMLL + IFIX principais)
+    // Isso simula "Ver Todas" cobrindo 99% do que importa.
+    const ALL_TICKERS = [
+        "VALE3", "PETR4", "ITUB4", "BBDC4", "BBAS3", "WEGE3", "ABEV3", "ELET3", "RENT3", "BPAC11", 
+        "SUZB3", "ITSA4", "HAPV3", "RDOR3", "GGBR4", "PRIO3", "CSAN3", "RAIL3", "VBBR3", "B3SA3", 
+        "EQTL3", "LREN3", "VIVT3", "TIMS3", "CMIG4", "UGPA3", "CPLE6", "EMBR3", "TOTS3", "SBSP3", 
+        "ENEV3", "RADL3", "BRFS3", "JBSS3", "CSNA3", "MGLU3", "VIIA3", "ASAI3", "CRFB3", "HYPE3", 
+        "MULT3", "CPFE3", "GOAU4", "CCRO3", "EGIE3", "CIEL3", "KLBN11", "TAEE11", "ALOS3", "BBSE3", 
+        "CXSE3", "FLRY3", "MRVE3", "EZTC3", "CYRE3", "CVCB3", "PETZ3", "SOMA3", "ARZZ3", "SMTO3",
+        "PSSA3", "IRBR3", "USIM5", "GOLL4", "AZUL4", "SLCE3", "STBP3", "MRFG3", "BEEF3", "AURE3"
+    ];
 
-    const API_TOKEN = 'token=wRDeSAirN1teSpR7afhgp3'; // Token público da Brapi
+    let processedData = []; // Armazena os dados já buscados
+    let currentIndex = 0;   // Controle da paginação
+    const BATCH_SIZE = 15;  // Quantas carregar por vez (para não estourar API e URL)
+    let chartInstance = null;
 
     // --- INICIALIZAÇÃO ---
     document.addEventListener('DOMContentLoaded', () => {
-        fetchMarketData();
+        loadNextBatch(); // Carrega as primeiras 15
     });
 
-    // --- LÓGICA DE NEGÓCIO ---
-    async function fetchMarketData() {
-        const tableBody = document.getElementById('stocksTableBody');
-        tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-primary"></div><div class="mt-2 text-muted">Analisando mercado...</div></td></tr>';
+    // --- SISTEMA DE PAGINAÇÃO (BATCH) ---
+    async function loadNextBatch() {
+        const btn = document.getElementById('btnLoadMore');
+        const progress = document.getElementById('progressBar');
+        
+        if (currentIndex >= ALL_TICKERS.length) {
+            btn.innerText = "Todas as ações listadas carregadas";
+            btn.disabled = true;
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Carregando...';
+        progress.style.width = '70%';
+
+        // Pega os próximos tickers
+        const batch = ALL_TICKERS.slice(currentIndex, currentIndex + BATCH_SIZE);
+        const tickersString = batch.join(',');
 
         try {
-            // Em produção, aumente o limit ou use paginação
-            const response = await fetch(`https://brapi.dev/api/quote/list?sortBy=volume&sortOrder=desc&limit=40&${API_TOKEN}`);
-            const data = await response.json();
-
-            // Processamento dos dados (Mockando fundamentos que faltam na API List free)
-            AppState.rawData = data.stocks.map(stock => {
-                const price = stock.close || 10;
-                // GERADOR DE DADOS FUNDAMENTALISTAS (Simulação para estudo)
-                // Num sistema real, usaríamos endpoint /quote/{ticker}?fundamental=true
-                const lpa = price * (Math.random() * 0.15 + 0.02); 
-                const vpa = price * (Math.random() * 0.6 + 0.6);
-                const dy = Math.random() * 14; 
-                
-                // Cálculos Reais
-                const graham = Math.sqrt(22.5 * lpa * vpa) || 0;
-                const margem = graham > 0 ? ((graham - price) / price) * 100 : 0;
-                const pl = lpa > 0 ? price / lpa : 0;
-
-                return {
-                    symbol: stock.stock,
-                    name: stock.name,
-                    price: price,
-                    change: stock.change,
-                    lpa, vpa, dy, pl,
-                    graham, margem,
-                    logo: stock.logo
-                };
+            const url = `https://brapi.dev/api/quote/${tickersString}?token=${API_TOKEN}&fundamental=true&dividends=true`;
+            const res = await fetch(url);
+            const json = await res.json();
+            
+            // Processa os dados
+            const newStocks = processApiData(json.results);
+            
+            // Adiciona ao array global (evita duplicatas se buscar manual depois)
+            newStocks.forEach(stock => {
+                if(!processedData.find(s => s.symbol === stock.symbol)) {
+                    processedData.push(stock);
+                }
             });
 
+            currentIndex += BATCH_SIZE;
+            renderTable(processedData);
             updateKPIs();
-            applySort(); // Ordena e renderiza inicial
-
+            
         } catch (error) {
-            console.error(error);
-            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Erro ao conectar com B3: ${error.message}</td></tr>`;
+            console.error("Erro no batch:", error);
+            alert("Erro ao carregar mais ações. Tente novamente em instantes.");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-arrow-down-circle"></i> Carregar Mais Ações';
+            progress.style.width = '100%';
+            setTimeout(() => progress.style.width = '0%', 500);
+            
+            // Se acabou a lista, desativa botão
+            if (currentIndex >= ALL_TICKERS.length) {
+                btn.style.display = 'none';
+            }
         }
+    }
+
+    // --- BUSCA MANUAL (Se a ação não estiver na lista) ---
+    async function handleSearchManual() {
+        const input = document.getElementById('globalSearch');
+        const ticker = input.value.toUpperCase().trim();
+        if(!ticker) return;
+
+        // Verifica se já temos os dados
+        const exists = processedData.find(s => s.symbol === ticker);
+        if(exists) {
+            // Filtra a tabela visualmente
+            renderTable([exists]);
+            return;
+        }
+
+        // Se não tem, busca na API
+        const btn = document.querySelector('.bi-search').parentNode;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        try {
+            const url = `https://brapi.dev/api/quote/${ticker}?token=${API_TOKEN}&fundamental=true&dividends=true`;
+            const res = await fetch(url);
+            const json = await res.json();
+            
+            if(json.results && json.results.length > 0) {
+                const stock = processApiData(json.results)[0];
+                processedData.unshift(stock); // Adiciona no topo
+                renderTable(processedData);
+                updateKPIs();
+            } else {
+                alert("Ação não encontrada!");
+            }
+        } catch(e) {
+            alert("Erro ao buscar ação. Verifique o código.");
+        } finally {
+            btn.innerHTML = '<i class="bi bi-search"></i>';
+        }
+    }
+
+    // --- LÓGICA DE DADOS ---
+    function processApiData(apiResults) {
+        return apiResults.map(stock => {
+            const price = stock.regularMarketPrice || 0;
+            
+            // Tratamento de falhas da API (Dados nulos)
+            const pl = stock.priceEarnings || 0;
+            const lpa = stock.earningsPerShare || (pl !== 0 ? price / pl : 0);
+            // Fallback para VPA (Estimação conservadora se vier null, para não quebrar UI)
+            const vpa = stock.bookValuePerShare || price; 
+            const dy = stock.logStock && stock.logStock.dividendYield ? stock.logStock.dividendYield : 0;
+
+            // Cálculos
+            let graham = 0;
+            if(lpa > 0 && vpa > 0) graham = Math.sqrt(22.5 * lpa * vpa);
+            
+            const margem = graham > 0 ? ((graham - price) / price) * 100 : -99;
+
+            return {
+                symbol: stock.symbol,
+                name: stock.longName || stock.symbol,
+                price, lpa, vpa, pl, dy, graham, margem
+            };
+        });
+    }
+
+    // --- UI E FILTROS ---
+    function renderTable(data) {
+        const tbody = document.getElementById('stocksTableBody');
+        tbody.innerHTML = '';
+
+        data.forEach(s => {
+            const badgeClass = s.margem > 20 ? 'badge-soft-success' : (s.margem > 0 ? 'badge-soft-warning' : 'badge-soft-danger');
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="fw-bold">${s.symbol}</div>
+                        <small class="text-muted" style="font-size: 0.75rem">${s.name.substring(0,18)}</small>
+                    </td>
+                    <td>R$ ${s.price.toFixed(2)}</td>
+                    <td class="text-info fw-bold">R$ ${s.graham.toFixed(2)}</td>
+                    <td><span class="badge ${badgeClass}">${s.margem.toFixed(1)}%</span></td>
+                    <td>${s.dy.toFixed(1)}%</td>
+                    <td>${s.pl.toFixed(1)}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-light border-0" onclick="openDetails('${s.symbol}')"><i class="bi bi-eye-fill"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function filterData(type) {
+        let filtered = [];
+        const btns = document.querySelectorAll('.d-flex.gap-2 button');
+        btns.forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        switch(type) {
+            case 'graham': filtered = processedData.filter(s => s.margem > 20); break;
+            case 'dividend': filtered = processedData.filter(s => s.dy > 6); break;
+            case 'cheap': filtered = processedData.filter(s => s.price < s.vpa); break;
+            default: filtered = processedData;
+        }
+        renderTable(filtered);
+    }
+    
+    function resetFilters() {
+        renderTable(processedData);
+        // Reset UI buttons active state logic if needed
+    }
+
+    function sortData(key) {
+        processedData.sort((a,b) => {
+            if(typeof a[key] === 'string') return a[key].localeCompare(b[key]);
+            return b[key] - a[key]; // Descending
+        });
+        renderTable(processedData);
     }
 
     function updateKPIs() {
-        document.getElementById('kpiCount').innerText = AppState.rawData.length;
+        document.getElementById('kpiTotal').innerText = processedData.length;
+        document.getElementById('kpiGraham').innerText = processedData.filter(s => s.margem > 20).length;
+        document.getElementById('kpiDy').innerText = processedData.filter(s => s.dy > 6).length;
+        document.getElementById('kpiCheap').innerText = processedData.filter(s => s.price < s.vpa).length;
+    }
+
+    // --- DETALHES ---
+    async function openDetails(symbol) {
+        const stock = processedData.find(s => s.symbol === symbol);
+        document.getElementById('modalTitle').innerText = `${symbol} - R$ ${stock.price.toFixed(2)}`;
         
-        // Conta quantas tem margem > 20%
-        const opportunities = AppState.rawData.filter(s => s.margem > 20).length;
-        document.getElementById('kpiGraham').innerText = opportunities;
+        document.getElementById('mdLpa').innerText = stock.lpa.toFixed(2);
+        document.getElementById('mdVpa').innerText = stock.vpa.toFixed(2);
+        document.getElementById('mdPl').innerText = stock.pl.toFixed(2);
 
-        // Média DY
-        const avgDy = AppState.rawData.reduce((acc, curr) => acc + curr.dy, 0) / AppState.rawData.length;
-        document.getElementById('kpiDy').innerText = avgDy.toFixed(2) + '%';
-    }
+        let text = "Ativo com indicadores neutros.";
+        if(stock.margem > 30 && stock.dy > 6) text = "💎 Ação 'Filé Mignon': Barata segundo Graham e boa pagadora de dividendos.";
+        else if(stock.margem > 30) text = "Oportunidade de Valor: Preço muito abaixo do patrimônio/lucro. Potencial de valorização.";
+        else if(stock.dy > 10) text = "Alto Dividendo: Verifique se o lucro é recorrente ou se foi um evento não recorrente.";
+        document.getElementById('mdAnalysis').innerText = text;
 
-    // --- FILTROS E ORDENAÇÃO ---
-
-    function applyFilter(type) {
-        AppState.filter = type;
-        const badge = document.getElementById('activeFilterBadge');
-
-        // Lógica de Filtro
-        if (type === 'all' || type === 'reset') {
-            AppState.displayData = [...AppState.rawData];
-            badge.innerText = "Todos os Ativos";
-            badge.className = "badge bg-secondary";
-        } 
-        else if (type === 'graham') {
-            AppState.displayData = AppState.rawData.filter(s => s.margem > 20);
-            badge.innerText = "Filtro: Graham (>20% Margem)";
-            badge.className = "badge bg-success";
-        } 
-        else if (type === 'dividendos') {
-            AppState.displayData = AppState.rawData.filter(s => s.dy > 6);
-            badge.innerText = "Filtro: Dividendos (>6%)";
-            badge.className = "badge bg-info text-dark";
-        }
-
-        // Re-aplica ordenação atual no novo dataset filtrado
-        applySort(null); 
-    }
-
-    function handleSearch() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        if (term === '') {
-            applyFilter(AppState.filter); // Restaura filtro atual
-            return;
-        }
-        
-        AppState.displayData = AppState.rawData.filter(s => 
-            s.symbol.toLowerCase().includes(term) || 
-            (s.name && s.name.toLowerCase().includes(term))
-        );
-        renderTable();
-    }
-
-    function sortTable(column) {
-        // Alterna ordem se clicar na mesma coluna
-        if (AppState.sort.column === column) {
-            AppState.sort.order = AppState.sort.order === 'asc' ? 'desc' : 'asc';
-        } else {
-            AppState.sort.column = column;
-            AppState.sort.order = 'desc'; // Padrão descrescente para números financeiro é melhor
-        }
-        applySort();
-    }
-
-    function applySort() {
-        // Se displayData estiver vazio (início), copia rawData
-        if (AppState.displayData.length === 0 && document.getElementById('searchInput').value === '') {
-            AppState.displayData = [...AppState.rawData];
-        }
-
-        const { column, order } = AppState.sort;
-
-        AppState.displayData.sort((a, b) => {
-            let valA = a[column];
-            let valB = b[column];
-
-            // Tratamento para strings (Symbol)
-            if (typeof valA === 'string') {
-                valA = valA.toLowerCase();
-                valB = valB.toLowerCase();
-            }
-
-            if (valA < valB) return order === 'asc' ? -1 : 1;
-            if (valA > valB) return order === 'asc' ? 1 : -1;
-            return 0;
-        });
-
-        renderTable();
-    }
-
-    // --- RENDERIZAÇÃO ---
-
-    function renderTable() {
-        const tbody = document.getElementById('stocksTableBody');
-        tbody.innerHTML = '';
-        
-        // Remove animação anterior para reiniciar
-        const container = document.querySelector('.table-container');
-        container.classList.remove('animate-fade');
-        void container.offsetWidth; // Trigger reflow
-        container.classList.add('animate-fade');
-
-        AppState.displayData.forEach(stock => {
-            const isGrahamSafe = stock.margem > 0;
-            const marginClass = isGrahamSafe ? 'text-success' : 'text-danger';
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <div class="fw-bold">${stock.symbol}</div>
-                    <small class="text-muted" style="font-size:0.75rem">${stock.name || ''}</small>
-                </td>
-                <td class="fw-semibold">R$ ${stock.price.toFixed(2)}</td>
-                <td>
-                    R$ ${stock.graham.toFixed(2)}
-                </td>
-                <td>
-                    <span class="badge ${stock.margem > 0 ? 'badge-graham' : 'badge-risk'}">
-                        ${stock.margem.toFixed(1)}%
-                    </span>
-                </td>
-                <td>${stock.dy.toFixed(1)}%</td>
-                <td>${stock.pl.toFixed(1)}x</td>
-                <td>
-                    <button class="btn btn-sm btn-action" onclick="openDetails('${stock.symbol}')">
-                        <i class="bi bi-eye"></i> Ver
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    // --- INTERAÇÃO MODAL ---
-
-    function openDetails(symbol) {
-        const stock = AppState.rawData.find(s => s.symbol === symbol);
-        if (!stock) return;
-
-        // 1. Preencher Título
-        document.getElementById('modalStockTitle').innerHTML = `
-            ${symbol} <span class="text-muted fw-light fs-6 ms-2">R$ ${stock.price.toFixed(2)}</span>
-        `;
-
-        // 2. Preencher Lista
-        const listHtml = `
-            <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between">
-                <span>Preço Justo (Graham)</span> <strong>R$ ${stock.graham.toFixed(2)}</strong>
-            </li>
-            <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between">
-                <span>Margem de Segurança</span> <strong class="${stock.margem > 0 ? 'text-success' : 'text-danger'}">${stock.margem.toFixed(2)}%</strong>
-            </li>
-            <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between">
-                <span>Dividend Yield</span> <strong>${stock.dy.toFixed(2)}%</strong>
-            </li>
-            <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between">
-                <span>P/L (Anos de Retorno)</span> <strong>${stock.pl.toFixed(1)} anos</strong>
-            </li>
-        `;
-        document.getElementById('modalDataList').innerHTML = listHtml;
-
-        // 3. Análise de Texto
-        let text = "";
-        if (stock.margem > 20 && stock.dy > 6) text = "Excelente oportunidade teórica. Ação descontada e pagadora de dividendos.";
-        else if (stock.margem > 20) text = "Ação barata segundo Graham (Value Investing). Verifique se os lucros são recorrentes.";
-        else if (stock.dy > 8) text = "Possível 'Vaca Leiteira'. Paga altos dividendos, mas está cara no patrimônio.";
-        else text = "Atenção: O mercado precifica esta ação acima do valor patrimonial calculado. Pode ser uma empresa de alto crescimento (Growth) ou estar cara.";
-        document.getElementById('modalAnalysisText').innerText = text;
-
-        // 4. Gráfico (Simulado)
-        renderChart(symbol, stock.price);
-
-        // 5. Abrir Modal (Método Oficial Bootstrap 5)
-        const modalEl = document.getElementById('stockModal');
-        const modal = new bootstrap.Modal(modalEl);
-        modal.show();
-    }
-
-    function renderChart(symbol, basePrice) {
+        // Gráfico
         const ctx = document.getElementById('detailChart').getContext('2d');
-        
-        if (AppState.chartInstance) {
-            AppState.chartInstance.destroy();
-        }
+        if (chartInstance) chartInstance.destroy();
 
-        // Simula histórico (random walk)
-        const history = [];
-        let current = basePrice;
-        for(let i=0; i<30; i++) {
-            history.push(current);
-            current = current * (1 + (Math.random() * 0.04 - 0.02));
-        }
-
-        AppState.chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array.from({length: 30}, (_, i) => `Dia ${i+1}`),
-                datasets: [{
-                    label: 'Cotação 30D',
-                    data: history,
-                    borderColor: '#38bdf8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { display: false },
-                    y: { grid: { color: '#334155' } }
+        // Buscar histórico rápido (1 mês)
+        try {
+             const res = await fetch(`https://brapi.dev/api/quote/${symbol}?range=1mo&interval=1d&token=${API_TOKEN}`);
+             const json = await res.json();
+             const hist = json.results[0].historicalDataPrice;
+             
+             chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hist.map(h => new Date(h.date * 1000).toLocaleDateString().slice(0,5)),
+                    datasets: [{
+                        label: 'Preço',
+                        data: hist.map(h => h.close),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
                 },
-                interaction: { intersect: false, mode: 'index' }
-            }
-        });
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { grid: { color: '#334155' } } }
+                }
+             });
+        } catch(e) { console.log("Erro chart", e); }
+
+        new bootstrap.Modal(document.getElementById('stockModal')).show();
     }
 
-    function toggleDidactic() {
-        const el = document.getElementById('didacticSection');
-        el.style.display = el.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function switchView(viewName) {
-        // Exemplo simples de navegação SPA (Single Page)
-        if(viewName === 'dashboard') {
-            document.querySelector('.table-container').style.display = 'block';
-            document.querySelector('.row.mb-4').style.display = 'flex'; // KPIs
-        } else if (viewName === 'portfolio') {
-            alert('Funcionalidade "Minha Carteira" em desenvolvimento!');
-        }
-    }
 </script>
 </body>
 </html>
